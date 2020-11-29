@@ -38,9 +38,9 @@ public class AtmApplication implements ApplicationListener<CustomEvent> {
 		//List<Banknote> result = banknoteRepository.findAll();
 		//System.out.println(result.get(0).getInitial_amount());
 		//checkAtm(atmService);
-		for(int j = 0; j < 5; j++) {
-			checkAtm(atmService);
-		}
+//		for(int j = 0; j < 5; j++) {
+//			checkAtm(atmService);
+//		}
 	}
 
 	public static void checkAtm(AtmService atmService) {

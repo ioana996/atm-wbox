@@ -33,12 +33,12 @@ public class AtmService {
 
     public void returnMoney(int amount) {
         AtmValidator atmValidator = new AtmValidator();
-        List<Banknote> atmBalance = banknoteRepository.findAll();
+        List<Banknote> atmBalance = banknoteRepository.findAllDesc();
         int[] result = new int[5];
         int i = 0;
-        int[] divisior = {100, 50, 10, 5, 1};
+        int[] divisor = {100, 50, 10, 5, 1};
 
-        atmBalance.sort(Comparator.comparing(Banknote::getValue).reversed());
+        //atmBalance.sort(Comparator.comparing(Banknote::getValue).reversed());
         // validate that required amount is a positive integer
         if(amount > 0 && Math.floor(amount) == amount) {
             // notify the client for withdrawals that surpass 200 RON
@@ -49,7 +49,7 @@ public class AtmService {
             if(checkAtmBalance(atmBalance) >= amount) {
                 // determine the optimal banknote repartition
                 atmValidator.calculateOptimalRepartition(result, atmBalance, amount,
-                        divisior, i);
+                        divisor, i);
                 // validate that there are enough banknotes for the optimal repartition
                 if(calculatedAmount(result) == amount) {
                     // print optimal repartition

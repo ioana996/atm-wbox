@@ -1,5 +1,7 @@
 package interview.wbox.atm.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 
 /**
@@ -11,6 +13,7 @@ public class Banknote {
 
     @Id
     @Column(name="id")
+    @JsonIgnore
     @GeneratedValue(strategy=GenerationType.IDENTITY)
     private Long id;
     @Column(name="value", unique = true)
