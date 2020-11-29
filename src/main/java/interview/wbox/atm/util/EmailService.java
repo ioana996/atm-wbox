@@ -7,7 +7,9 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class EmailService {
-    public void sendEmail(String message) {
+    public void sendEmail(String message, String email) {
         System.out.println(message);
+        System.out.println("Emergency level: Warning" );
+        System.out.println("Email address: " + email);
     }
 }

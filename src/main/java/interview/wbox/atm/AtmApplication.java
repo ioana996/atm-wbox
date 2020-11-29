@@ -1,7 +1,5 @@
 package interview.wbox.atm;
 
-import interview.wbox.atm.exception.InsufficientBalanceException;
-import interview.wbox.atm.model.Banknote;
 import interview.wbox.atm.repository.BanknoteRepository;
 import interview.wbox.atm.service.AtmService;
 import interview.wbox.atm.util.*;
@@ -11,7 +9,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationListener;
 
-import java.util.List;
+import java.util.Scanner;
 
 @SpringBootApplication
 public class AtmApplication implements ApplicationListener<CustomEvent> {
@@ -40,13 +38,22 @@ public class AtmApplication implements ApplicationListener<CustomEvent> {
 		//List<Banknote> result = banknoteRepository.findAll();
 		//System.out.println(result.get(0).getInitial_amount());
 		//checkAtm(atmService);
-		atmService.returnMoney(342);
+		for(int j = 0; j < 5; j++) {
+			checkAtm(atmService);
+		}
 	}
 
 	public static void checkAtm(AtmService atmService) {
-		Operations operations = new Operations();
-		int amount = operations.readInput();
+		int amount = readInput();
 		atmService.returnMoney(amount);
+	}
+
+	public static int readInput() {
+		int amount;
+		Scanner console = new Scanner(System.in);
+		System.out.println("Insert amount to be withdrawn: ");
+		amount = console.nextInt();
+		return amount;
 	}
 
 	@Override
@@ -58,13 +65,16 @@ public class AtmApplication implements ApplicationListener<CustomEvent> {
 						"amount of 200 RON is being made from your account");
 				break;
 			case UNDER20:
-				emailService.sendEmail("The balance of the 100 RON banknotes has fallen under 20%");
+				emailService.sendEmail("The balance of the 100 RON banknotes has fallen under 20%",
+										"admin@gmail.com");
 				break;
 			case UNDER10:
-				smsService.sendSMS("The balance of the 100 RON banknotes has fallen under 10%");
+				smsService.sendSMS("The balance of the 100 RON banknotes has fallen under 10%",
+						"0739 567 421");
 				break;
 			case UNDER15:
-				emailService.sendEmail("The balance of the 50 RON banknotes has fallen under 15%");
+				emailService.sendEmail("The balance of the 50 RON banknotes has fallen under 15%",
+						"admin@gmail.com");
 				break;
 		}
 	}

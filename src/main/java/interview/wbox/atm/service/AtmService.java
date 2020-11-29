@@ -37,22 +37,32 @@ public class AtmService {
         int[] result = new int[5];
         int i = 0;
         int[] divisior = {100, 50, 10, 5, 1};
-        int[] bank = new int[5];
 
         atmBalance.sort(Comparator.comparing(Banknote::getValue).reversed());
         // validate that required amount is a positive integer
         if(amount > 0 && Math.floor(amount) == amount) {
+            // notify the client for withdrawals that surpass 200 RON
             if(amount > 200) {
-                // TODO notify the client
-                CustomEvent customEvent = new CustomEvent(this, EventType.BIGAMOUNT);
-                applicationEventPublisher.publishEvent(customEvent);
+                publishCustomEvent(EventType.BIGAMOUNT);
             }
             // check there is enough money in the atm
             if(checkAtmBalance(atmBalance) >= amount) {
+                // determine the optimal banknote repartition
                 atmValidator.calculateOptimalRepartition(result, atmBalance, amount,
                         divisior, i);
+                // validate that there are enough banknotes for the optimal repartition
                 if(calculatedAmount(result) == amount) {
-                    // TODO update database and check percentages
+                    // print optimal repartition
+                    printOptimalAmount(atmBalance, result);
+                    // update atm balance
+                    for(int j = 0; j < result.length; j++) {
+                        if(result[j] != 0) {
+                            Banknote b = atmBalance.get(j);
+                            banknoteRepository.save(b);
+                            // notify admin for critical changes in the balance
+                            notifyAdmin(b);
+                        }
+                    }
                 } else throw new NoOptimalRepartitionException();
             } else throw new InsufficientBalanceException();
         } else throw new InvalidAmountException();
@@ -69,5 +79,44 @@ public class AtmService {
         int calculatedAmount = result[0] * 100 + result[1] * 50 +
                 result[2] * 10 + result[3] * 5 + result[4];
         return calculatedAmount;
+    }
+
+    public void publishCustomEvent(EventType type) {
+        CustomEvent customEvent = new CustomEvent(this, type);
+        applicationEventPublisher.publishEvent(customEvent);
+    }
+
+    public float calculateThresholdAmount(float threshold, Banknote b) {
+        float result = (threshold * (float)b.getInitial_amount()) / (float)100;
+        return result;
+    }
+
+    public void notifyAdmin(Banknote b) {
+        switch(b.getValue()) {
+            case 100:
+                float thresholdAmount1 = calculateThresholdAmount(10, b);
+                float thresholdAmount2 = calculateThresholdAmount(20, b);
+                if((float)b.getLeft_amount() < thresholdAmount1) {
+                    publishCustomEvent(EventType.UNDER10);
+                } else if(((float)b.getLeft_amount() >= thresholdAmount1)
+                        && ((float)b.getLeft_amount() < thresholdAmount2)) {
+                    publishCustomEvent(EventType.UNDER20);
+                }
+                break;
+            case 50:
+                float thresholdAmount = calculateThresholdAmount(15, b);
+                if((float)b.getLeft_amount() < thresholdAmount) {
+                    publishCustomEvent(EventType.UNDER15);
+                }
+                break;
+        }
+    }
+
+    public void printOptimalAmount(List<Banknote> atmBalance, int[] result) {
+        System.out.println();
+        for(int j = 0; j < result.length; j++) {
+            System.out.println(atmBalance.get(j).getValue() + " RON: " + result[j] + " banknotes");
+        }
+        System.out.println();
     }
 }
