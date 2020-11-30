@@ -3,6 +3,7 @@ package interview.wbox.atm.controller;
 import interview.wbox.atm.model.Banknote;
 import interview.wbox.atm.repository.BanknoteRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,6 +16,9 @@ import java.util.List;
  */
 @RestController
 public class AtmController {
+
+    public static final String ROLE_ADMIN = "ROLE_ADMIN";
+    public static final String ROLE_CLIENT = "ROLE_CLIENT";
 
     @Autowired
     private BanknoteRepository banknoteRepository;
@@ -29,12 +33,13 @@ public class AtmController {
         }
     }
 
-    @RequestMapping(value = "/getBalance", consumes = "application/json", produces = "application/json")
+    @RequestMapping(value = "/getBalance", produces = "application/json")
     public List<Banknote> getAtmBalance () {
         return banknoteRepository.findAll();
     }
 
-    @RequestMapping(value = "/testSecurity", consumes = "application/json", produces = "application/json")
+    //@Secured({ROLE_ADMIN})
+    @RequestMapping(value = "/testSecurity", produces = "application/json")
     public String testSecurity () {
         return "Security works!";
     }

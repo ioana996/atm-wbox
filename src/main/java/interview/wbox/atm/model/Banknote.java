@@ -23,7 +23,7 @@ public class Banknote {
     @Column(name="left_amount")
     private Integer left_amount;
 
-    public Banknote(){};
+    public Banknote(){}
     public Banknote(int value, int initial_amount, int left_amount) {
         this.value = value;
         this.initial_amount = initial_amount;

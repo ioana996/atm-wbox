@@ -15,8 +15,7 @@ import java.util.List;
 @Repository
 public interface BanknoteRepository extends JpaRepository<Banknote, Long>{
 
-    @Query("select b from Banknote b where b.value = :value")
-    Banknote findByValue(@Param("value") Integer value) ;
+    Banknote findByValue(Integer value) ;
 
     @Query("select b from Banknote b order by b.value desc")
     List<Banknote> findAllDesc() ;
