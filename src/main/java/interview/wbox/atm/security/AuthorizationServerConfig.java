@@ -79,7 +79,7 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
                 .inMemory()
                 .withClient("wbox-client").secret(bCryptPasswordEncoder.encode("secret"))
                 .authorizedGrantTypes("password", "authorization_code", "refresh_token")
-                //.authorities("READ_ONLY_CLIENT")
+                .authorities("ADMIN")
                 //.scopes("read_profile_info")
                 .resourceIds("resource_id")
                 //.redirectUris("http://localhost:8081/login")

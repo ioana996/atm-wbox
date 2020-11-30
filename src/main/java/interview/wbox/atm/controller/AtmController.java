@@ -38,9 +38,4 @@ public class AtmController {
         return banknoteRepository.findAll();
     }
 
-    //@Secured({ROLE_ADMIN})
-    @RequestMapping(value = "/testSecurity", produces = "application/json")
-    public String testSecurity () {
-        return "Security works!";
-    }
 }
