@@ -1,6 +1,6 @@
 # ATM 
 
-A Java program that simulates an ATM machine. It reads a sum from the keyboard and returns the optimal repartition of the sum (the smallest number of banknotes that the ATM can return to the client considering the amount of banknotes left in the machine). The program also provides a secured REST API that allows ADMIN users to check the ATM's balance and refill it.  
+A Java program that simulates an ATM machine. It reads an amount from the keyboard and returns the optimal repartition of it (the smallest number of banknotes that the ATM can return to the client considering the amount of banknotes left in the machine). The program also provides a secured REST API that allows ADMIN users to check the ATM's balance and refill it.  
 
 ## Technologies 
 
@@ -64,7 +64,7 @@ This is the iteration step that goes from 0 to 5.
 
 **How it works?**
 
-On each iteration step *i*, the algorithm divides the amount to be withdrawn by the value of the banknote present in the *divisor* vector at index *i*. If the result is greater than 0 it means that we need banknotes from the current value. Therefore the algorithm proceeds next with the validation of the amount present in the database. If there are enough banknotes in the database, we substract the number of the banknotes needed from the *left_amount* and also update the *result* vector at the index corresponding to the current step of the iteration, namely *i*. In case there are not enough banknotes left in the atm for this operation, we take the ones left in the atm, update the value in the list to 0, as well as the values in the *result* vector to the number of banknotes extracted from the database and go to the next iteration step. When the inserted sum *(n)* is 0, it means we calculated the optimal repartition of the withdrawal amount. 
+On each iteration step *i*, the algorithm divides the amount to be withdrawn by the value of the banknote present in the *divisor* vector at index *i*. If the result is greater than 0 it means that we need banknotes from the current value. Therefore the algorithm proceeds next with the validation of the amount present in the database. If there are enough banknotes in the database, we substract the number of the banknotes needed from the *left_amount* and also update the *result* vector at the index corresponding to the current step of the iteration, namely *i*. In case there are not enough banknotes left in the atm for this operation, we take the ones left in the atm, update the value in the list to 0, as well as the values in the *result* vector to the number of banknotes needed from a certain value and go to the next iteration step. When the inserted sum - *(n)* - is 0, it means we calculated the optimal repartition of the withdrawal amount. 
 
 At the end of the recursive algorithm, the amount is recalculated using the *result* vector. If it equals the initial value inserted by a client it means that there are enough banknotes in the atm to proceed with the withdrawal and we update the database with the values present in the *atmBalance* list. 
 
@@ -80,7 +80,7 @@ Create a POST request as shown in the image below:
 
 ![image](https://user-images.githubusercontent.com/27513879/100792024-b418f900-3422-11eb-9b8b-89340a3392fd.png)  
 
-Also go to Authorization tab on Postman, select *Basic Auth* and then insert the client id and password with which the resource server is identified at the Autorization Server. See picture below:
+Also go to Authorization tab on Postman, select *Basic Auth* and then insert the client id and secret with which the resource server is identified at the Autorization Server. See picture below:
 
 ![image](https://user-images.githubusercontent.com/27513879/100791800-63090500-3422-11eb-918e-4b3d54c8f93f.png)  
 Now we can proceed with the request. We should get a response as seen in the picture below:
