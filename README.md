@@ -61,3 +61,12 @@ This is the iteration step that goes from 0 to 5.
 On each iteration step *i*, the algorithm divides the amount to be withdrawn by the value of the banknote present in the *divisor* vector at index *i*. If the result is greater than 0 it means that we need banknotes from the current value. Therefore the algorithm proceeds next with the validation of the amount present in the database. If there are enough banknotes in the database, we substract the number of the banknotes needed from the *left_amount* and also update the *result* vector at the index corresponding to the current step of the iteration, namely *i*. In case there are not enough banknotes left in the atm for this operation, we take the ones left in the atm, update the value in the list to 0, as well as the values in the *result* vector to the number of banknotes extracted from the database and go to the next iteration step. When the inserted sum *(n)* is 0, it means we calculated the optimal repartition of the withdrawal amount. 
 
 At the end of the recursive algorithm, the amount is recalculated using the *result* vector. If it equals the initial value inserted by a client it means that there are enough banknotes in the atm to proceed with the withdrawal and we update the database with the values present in the *atmBalance* list. 
+
+## Secured API
+
+The program implements a secured REST API that allows RBAC via OAuth2. The API only allows ADMIN users to interact with the ATM remotely. Each user has to make a POST request to the */oauth/token* to get an access token, followed by another http request to the endpoints that interact with the database. 
+
+The security implementation simulates an *Authorization Server*, as well as a *Resource Server* according to the OAuth2 terminology. 
+
+- **Request to get an access token**  
+
