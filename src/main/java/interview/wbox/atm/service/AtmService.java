@@ -1,7 +1,6 @@
 package interview.wbox.atm.service;
 
 import interview.wbox.atm.exception.InsufficientBalanceException;
-import interview.wbox.atm.exception.InvalidAmountException;
 import interview.wbox.atm.exception.NoOptimalRepartitionException;
 import interview.wbox.atm.model.Banknote;
 import interview.wbox.atm.repository.BanknoteRepository;
@@ -12,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
-import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -27,10 +25,6 @@ public class AtmService {
     @Autowired
     private BanknoteRepository banknoteRepository;
 
-    public Banknote createBanknote(Banknote banknote) {
-        return banknoteRepository.save(banknote);
-    }
-
     public void returnMoney(int amount) {
         AtmValidator atmValidator = new AtmValidator();
         List<Banknote> atmBalance = banknoteRepository.findAllDesc();
@@ -38,60 +32,55 @@ public class AtmService {
         int i = 0;
         int[] divisor = {100, 50, 10, 5, 1};
 
-        //atmBalance.sort(Comparator.comparing(Banknote::getValue).reversed());
-        // validate that required amount is a positive integer
-        if(amount > 0 && Math.floor(amount) == amount) {
-            // notify the client for withdrawals that surpass 200 RON
-            if(amount > 200) {
-                publishCustomEvent(EventType.BIGAMOUNT);
-            }
-            // check there is enough money in the atm
-            if(checkAtmBalance(atmBalance) >= amount) {
-                // determine the optimal banknote repartition
-                atmValidator.calculateOptimalRepartition(result, atmBalance, amount,
-                        divisor, i);
-                // validate that there are enough banknotes for the optimal repartition
-                if(calculatedAmount(result) == amount) {
-                    // print optimal repartition
-                    printOptimalAmount(atmBalance, result);
-                    // update atm balance
-                    for(int j = 0; j < result.length; j++) {
-                        if(result[j] != 0) {
-                            Banknote b = atmBalance.get(j);
-                            banknoteRepository.save(b);
-                            // notify admin for critical changes in the balance
-                            notifyAdmin(b);
-                        }
+        // notify the client for withdrawals that surpass 200 RON
+        int insertedAmount = Math.round(amount);
+        if(amount > 200) {
+            publishCustomEvent(EventType.BIGAMOUNT);
+        }
+        // check there is enough money in the atm
+        if(checkAtmBalance(atmBalance) >= amount) {
+            // determine the optimal banknote repartition
+            atmValidator.calculateOptimalRepartition(result, atmBalance, amount,
+                    divisor, i);
+            // validate that there are enough banknotes for the optimal repartition
+            if(calculatedAmount(result) == amount) {
+                // print optimal repartition
+                printOptimalAmount(atmBalance, result);
+                // update atm balance
+                for(int j = 0; j < result.length; j++) {
+                    if(result[j] != 0) {
+                        Banknote b = atmBalance.get(j);
+                        banknoteRepository.save(b);
+                        // notify admin for critical changes in the balance
+                        notifyAdmin(b);
                     }
-                } else throw new NoOptimalRepartitionException();
-            } else throw new InsufficientBalanceException();
-        } else throw new InvalidAmountException();
+                }
+            } else throw new NoOptimalRepartitionException();
+        } else throw new InsufficientBalanceException();
     }
 
-    public Integer checkAtmBalance(List<Banknote> atmBalance) {
+    private Integer checkAtmBalance(List<Banknote> atmBalance) {
         int balance = 0;
-        for(int i = 0; i < atmBalance.size(); i++) {
-            balance += atmBalance.get(i).getValue() * atmBalance.get(i).getLeft_amount();
+        for (Banknote b : atmBalance) {
+            balance += b.getValue() * b.getLeft_amount();
         }
         return balance;
     }
-    public Integer calculatedAmount(int[] result) {
-        int calculatedAmount = result[0] * 100 + result[1] * 50 +
+    private Integer calculatedAmount(int[] result) {
+        return result[0] * 100 + result[1] * 50 +
                 result[2] * 10 + result[3] * 5 + result[4];
-        return calculatedAmount;
     }
 
-    public void publishCustomEvent(EventType type) {
+    private void publishCustomEvent(EventType type) {
         CustomEvent customEvent = new CustomEvent(this, type);
         applicationEventPublisher.publishEvent(customEvent);
     }
 
-    public float calculateThresholdAmount(float threshold, Banknote b) {
-        float result = (threshold * (float)b.getInitial_amount()) / (float)100;
-        return result;
+    private float calculateThresholdAmount(float threshold, Banknote b) {
+        return (threshold * (float)b.getInitial_amount()) / (float)100;
     }
 
-    public void notifyAdmin(Banknote b) {
+    private void notifyAdmin(Banknote b) {
         switch(b.getValue()) {
             case 100:
                 float thresholdAmount1 = calculateThresholdAmount(10, b);
@@ -112,10 +101,11 @@ public class AtmService {
         }
     }
 
-    public void printOptimalAmount(List<Banknote> atmBalance, int[] result) {
+    private void printOptimalAmount(List<Banknote> atmBalance, int[] result) {
         System.out.println();
         for(int j = 0; j < result.length; j++) {
-            System.out.println(atmBalance.get(j).getValue() + " RON: " + result[j] + " banknotes");
+            if(result[j] != 0)
+                System.out.println(atmBalance.get(j).getValue() + " RON: " + result[j] + " banknotes");
         }
         System.out.println();
     }

@@ -16,7 +16,7 @@ public class AtmValidator {
         if(n > 0 && i < divisor.length) {
             int x = n / divisor[i];
             if(x > 0 && atmBalance.get(i).getLeft_amount() > 0) {
-                int aux = 0;
+                int aux;
                 if(atmBalance.get(i).getLeft_amount() >= x) {
                     aux = x;
                     atmBalance.get(i).setLeft_amount(atmBalance.get(i).getLeft_amount() - x);

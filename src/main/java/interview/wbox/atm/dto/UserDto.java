@@ -3,10 +3,7 @@ package interview.wbox.atm.dto;
 /**
  * Created by ioana on 11/29/2020.
  */
-import interview.wbox.atm.model.Role;
-
 import java.util.List;
-import java.util.Set;
 
 public class UserDto {
 

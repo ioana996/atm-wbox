@@ -1,5 +1,6 @@
 package interview.wbox.atm.util;
 
+import interview.wbox.atm.model.User;
 import org.springframework.stereotype.Component;
 
 /**
@@ -7,7 +8,7 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class SMSService {
-    public void sendSMS(String message,String phoneNumber) {
+    public void sendSMS(String message, String phoneNumber) {
         System.out.println(message);
         System.out.println("Emergency level: Critical" );
         System.out.println("Phone number: " + phoneNumber);

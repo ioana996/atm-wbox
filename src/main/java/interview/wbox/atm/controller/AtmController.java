@@ -3,7 +3,6 @@ package interview.wbox.atm.controller;
 import interview.wbox.atm.model.Banknote;
 import interview.wbox.atm.repository.BanknoteRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,11 +16,13 @@ import java.util.List;
 @RestController
 public class AtmController {
 
-    public static final String ROLE_ADMIN = "ROLE_ADMIN";
-    public static final String ROLE_CLIENT = "ROLE_CLIENT";
-
     @Autowired
     private BanknoteRepository banknoteRepository;
+
+    @PostMapping(value = "/createAtm", consumes = "application/json", produces = "application/json")
+    public void createAtm (@RequestBody List<Banknote> banknotes) {
+        banknoteRepository.saveAll(banknotes);
+    }
 
     @PostMapping(value = "/addMoney", consumes = "application/json", produces = "application/json")
     public void addMoney (@RequestBody List<Banknote> refillBanknotes) {

@@ -1,7 +1,6 @@
 package interview.wbox.atm.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import javax.persistence.*;
 
 /**
@@ -29,6 +28,7 @@ public class Banknote {
         this.initial_amount = initial_amount;
         this.left_amount= left_amount;
     }
+
     public Long getId() {
         return id;
     }
@@ -50,5 +50,4 @@ public class Banknote {
     public void setLeft_amount(Integer left_amount) {
         this.left_amount = left_amount;
     }
-
 }

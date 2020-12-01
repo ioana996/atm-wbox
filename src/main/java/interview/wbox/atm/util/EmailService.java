@@ -1,5 +1,6 @@
 package interview.wbox.atm.util;
 
+import interview.wbox.atm.model.User;
 import org.springframework.stereotype.Component;
 
 /**
