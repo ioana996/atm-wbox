@@ -1,10 +1,16 @@
 # ATM 
 
-A Java program that simulates an ATM machine. It reads a sum from the keyboard and returns the optimal repartition of the sum (the smallest number of banknotes that the ATM can return to the client considering the amount of banknotes left in the machine). The program also provides a secured REST API that allows ADMIN users to check the ATM's balance and refill it.
+A Java program that simulates an ATM machine. It reads a sum from the keyboard and returns the optimal repartition of the sum (the smallest number of banknotes that the ATM can return to the client considering the amount of banknotes left in the machine). The program also provides a secured REST API that allows ADMIN users to check the ATM's balance and refill it.  
 
 ## Technologies 
 
 Java, Spring, Spring Boot, Hibernate, Spring Data JPA, PostgreSQL, Spring Security, Maven 
+
+## Run the app
+
+```bash
+mvn spring-boot:run
+```
 
 ## Project Structure
 
@@ -66,7 +72,59 @@ At the end of the recursive algorithm, the amount is recalculated using the *res
 
 The program implements a secured REST API that allows RBAC via OAuth2. The API only allows ADMIN users to interact with the ATM remotely. Each user has to make a POST request to the */oauth/token* to get an access token, followed by another http request to the endpoints that interact with the database. 
 
-The security implementation simulates an *Authorization Server*, as well as a *Resource Server* according to the OAuth2 terminology. 
+The security implementation simulates an *Authorization Server*, as well as a *Resource Server* according to the OAuth2 terminology. In this case, our Resource Server is the REST API. 
 
 - **Request to get an access token**  
 
+Create a POST request as shown in the image below:  
+
+![image](https://user-images.githubusercontent.com/27513879/100792024-b418f900-3422-11eb-9b8b-89340a3392fd.png)  
+
+Also go to Authorization tab on Postman, select *Basic Auth* and then insert the client id and password with which the resource server is identified at the Autorization Server. See picture below:
+
+![image](https://user-images.githubusercontent.com/27513879/100791800-63090500-3422-11eb-918e-4b3d54c8f93f.png)  
+Now we can proceed with the request. We should get a response as seen in the picture below:
+
+![image](https://user-images.githubusercontent.com/27513879/100792417-4ae5b580-3423-11eb-9452-fff28771e120.png)  
+
+Since we got an access token, now we can go to the next step and make an authorized request to the REST API.  
+- **REST API request**  
+There are two main endpoints in this API, to check the amount left in the ATM, as well as refilling it.  
+For refilling the ATM, copy the access token from the previous step and make a new request with Postman as follows:  make a POST request with the access token sent as a query parameter, a header with Content-Type set to application/json and a body that looks like the JSON below.  
+ 
+ ```JSON
+ [
+        {
+            "value":100,
+            "initial_amount":50,
+            "left_amount":50
+        },
+        {
+            "value":50,
+            "initial_amount":50,
+            "left_amount":50
+        },
+        {
+            "value":10,
+            "initial_amount":100,
+            "left_amount":100
+        },
+        {
+            "value":5,
+            "initial_amount":100,
+            "left_amount":100
+        },
+        {
+            "value":1,
+            "initial_amount":100,
+            "left_amount":100
+        }
+]
+ ```
+Below is a screenshot of the request:  
+![image](https://user-images.githubusercontent.com/27513879/100793485-d6ac1180-3424-11eb-9da9-0405ba4a5143.png)  
+
+The request to check the ATM balance is more simple. You should make a GET request to the endpoint /atm/getBalance with the access token as a query parameter. You will receive as a response a JSON with a format identical to the one shown above that represents a mapping of the database.  
+
+## Other features
+The program also implements an Event Notification System that notifies the admin when the balance drops under a certain limit, as well as the client when an amount higher than 200 RON is made from their account. 
